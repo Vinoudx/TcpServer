@@ -13,7 +13,9 @@
 class EventLoop;
 
 /*
-    EventLoopThread是对
+    EventLoopThread是对EventLoop在线程中的封装
+    简单的说就是把EventLoop对象放到Thread类中运行
+    实现one loop per thread
 */
 class EventLoopThread: public noncopyable{
 public:
@@ -24,6 +26,7 @@ public:
     ~EventLoopThread();
 
     void threadFunc();
+    // 开启内部的线程，执行EventLoop的loop()
     EventLoop* startLoop();
 
 private:

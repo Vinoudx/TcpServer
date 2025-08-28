@@ -5,7 +5,7 @@
 #include "EventLoop.hpp"
 
 const int Channel::KNoneEvent = 0;
- // 这个是EPOLLRPRI是为了带外信息吗
+// 这个是EPOLLRPRI是为了带外信息吗
 const int Channel::KReadEvent = EPOLLIN | EPOLLPRI;
 const int Channel::KWriteEvent = EPOLLOUT;
 

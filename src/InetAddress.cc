@@ -11,19 +11,19 @@ InetAddress::InetAddress(const std::string& ip, uint16_t port){
 }
 
 
-std::string InetAddress::toIp(){
+std::string InetAddress::toIp() const{
     char buf[64] = {0};
     inet_ntop(AF_INET, &m_addr.sin_addr.s_addr, buf, 64);
     return buf;
 }
 
 
-uint16_t InetAddress::toPort(){
+uint16_t InetAddress::toPort() const{
     return ntohs(m_addr.sin_port);
 }
 
 
-std::string InetAddress::toIpPort(){
+std::string InetAddress::toIpPort() const{
     char buf[128];
     snprintf(buf, 128, "%s:%d", toIp().c_str(), toPort());
     return buf;
