@@ -31,12 +31,12 @@ TcpConnection::TcpConnection(EventLoop* loop, const std::string& name, int sockf
     m_channel->setWriteCallback(std::bind(&TcpConnection::handleWrite, this));
     m_channel->setCloseCallback(std::bind(&TcpConnection::handleClose, this));
     m_channel->setErrorCallback(std::bind(&TcpConnection::handleError, this));
-    spdlog::info("TcpConnection::ctor[%s] at fd=%d", name.c_str(), sockfd);
+    spdlog::info("TcpConnection::ctor[{}] at fd={}", name.c_str(), sockfd);
     m_socket->setKeepAlive(true);
 }
 
 TcpConnection::~TcpConnection(){
-    spdlog::info("TcpConnection::dtor[%s] at fd=%d state=%d", m_name.c_str(), m_socket->fd(), (int)m_state);
+    spdlog::info("TcpConnection::dtor[{}] at fd={} state={}", m_name.c_str(), m_socket->fd(), (int)m_state);
 }
 
 void TcpConnection::handleRead(TimeStamp recvTime){
@@ -77,7 +77,7 @@ void TcpConnection::handleWrite(){
     }
 }
 void TcpConnection::handleClose(){
-    spdlog::info("fd=%d state=%d", m_channel->fd(), (int)m_state);
+    spdlog::info("fd={} state={}", m_channel->fd(), (int)m_state);
     setState(KDisconnectd);
     m_channel->disableAll();
     // 防止在调用回调时自己被析构
@@ -93,7 +93,7 @@ void TcpConnection::handleError(){
     if(::getsockopt(m_channel->fd(), SOL_SOCKET, SO_ERROR, &optval, &optlen) < 0){
         optval = errno;
     }
-    spdlog::error("TcpConnection::handleError [%s] error: %d", m_name.c_str(), optval);
+    spdlog::error("TcpConnection::handleError [{}] error: {}", m_name.c_str(), optval);
 }
 
 void TcpConnection::send(const std::string& buf){

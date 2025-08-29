@@ -43,6 +43,7 @@ void TcpServer::setThreadNum(int threadNum){
 void TcpServer::start(){
     // 保证只启动一次
     if(m_started++ == 0){
+        spdlog::debug("TcpServer::start");
         m_threadPool->start(m_threadInitCallback);
         // 这个跟直接调用m_accptor->listen()有什么区别？
         m_loop->runInLoop(std::bind(&Acceptor::listen, m_acceptor.get()));
@@ -55,7 +56,7 @@ void TcpServer::newConnection(int sockfd, const InetAddress& peerAddr){
     snprintf(buf, sizeof buf, "-%s#%d", m_ipPort.c_str(), m_nextFd);
     m_nextFd++;
     std::string connName = m_name+buf;
-    spdlog::info("TcpServer::newConnection [%s] - new connection [%s] from %s", m_name, connName, peerAddr.toIpPort());
+    spdlog::info("TcpServer::newConnection [{}] - new connection [{}] from {}", m_name, connName, peerAddr.toIpPort());
     
     sockaddr_in local;
     ::bzero(&local, sizeof local);
@@ -78,7 +79,7 @@ void TcpServer::removeConnection(const TcpConnectionPtr& conn){
 }
 
 void TcpServer::removeConnectionInLoop(const TcpConnectionPtr& conn){
-    spdlog::info("TcpServer::removeConnection [%s] - connection", conn->name());
+    spdlog::info("TcpServer::removeConnection [{}] - connection", conn->name());
     m_map.erase(conn->name());
     EventLoop* ioloop = conn->getLoop();
     ioloop->runInLoop(std::bind(&TcpConnection::connectDestoried, conn));

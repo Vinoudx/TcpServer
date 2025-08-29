@@ -52,12 +52,13 @@ void EventLoop::handleRead(){
     uint64_t one = 1;
     ssize_t n = read(m_wakeupFd, &one, sizeof(uint64_t));
     if(n != sizeof(uint64_t)){
-        spdlog::error("EventLoop::handleRead recv %d bytes", n);
+        spdlog::error("EventLoop::handleRead recv {} bytes", n);
     }
 }
 
 void EventLoop::loop(){
     assertInLoopThread();
+    spdlog::debug("EventLoop::loop");
     m_looping = true;
     m_quit = false;
     while(!m_quit){
@@ -124,7 +125,7 @@ void EventLoop::wakeup(){
     uint64_t one = 1;
     ssize_t n = write(m_wakeupFd, reinterpret_cast<char*>(&one), sizeof(uint64_t));
     if(n != sizeof(uint64_t)){
-        spdlog::error("EventLoop::wakeup send %d bytes");
+        spdlog::error("EventLoop::wakeup send {} bytes", n);
     }
 }
 

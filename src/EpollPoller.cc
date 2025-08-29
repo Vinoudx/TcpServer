@@ -26,6 +26,8 @@ EpollPoller::~EpollPoller(){
 }
 
 void EpollPoller::updateChannel(Channel* channel){
+    spdlog::debug("EpollPoller::updateChannel");
+    if(channel->isReading())spdlog::debug("reading");
     int index = channel->index();
     if(index == KNew || index == KDeleted){
         int fd = channel->fd();
@@ -69,14 +71,15 @@ void EpollPoller::update(int operation, Channel* channel){
     int fd = channel->fd();
     if(epoll_ctl(m_epollfd, operation, fd, &event)){
         if(operation == EPOLL_CTL_DEL){
-            spdlog::error("epoll_ctl delete fail %d", fd);
+            spdlog::error("epoll_ctl delete fail {}", fd);
         }else{
-            spdlog::critical("epoll_ctl fail fd%d", fd);
+            spdlog::critical("epoll_ctl fail fd {}", fd);
         }
     }
 }
 
 TimeStamp EpollPoller::poll(int timeoutMs, ChannelList* activeChannel){
+    spdlog::debug("EpollPoller::poll");
     int numEvents = epoll_wait(m_epollfd, &*m_events.begin(), m_events.size(), timeoutMs);
     TimeStamp now(TimeStamp::now());    
     int savedError = 0;
@@ -88,7 +91,7 @@ TimeStamp EpollPoller::poll(int timeoutMs, ChannelList* activeChannel){
         }
     }else if(numEvents < 0){
         savedError = errno;
-        spdlog::error("EpollPoller::poll(), error: %d", savedError);
+        spdlog::error("EpollPoller::poll(), error: {}", savedError);
     }
     // else if(numEvents == 0) 超时没有事件，无事发生
     return now;

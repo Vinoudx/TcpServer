@@ -26,18 +26,20 @@ Acceptor::~Acceptor(){
 }
 
 void Acceptor::handleRead(){
+    spdlog::debug("Acceptor::handleRead");
     InetAddress peeraddr;
     int sockfd = m_acceptSocket.accept(&peeraddr);
     if(sockfd >= 0){
         if(m_cb){
             m_cb(sockfd, peeraddr);
         }else{
+            spdlog::debug("no newConnectionCallback");
             // 如果没有创立连接的回调，则直接关闭
             // 这合理吗？或者说这种情况会发生吗?
             ::close(sockfd);
         }
     }else{
-        spdlog::error("Acceptor::handleRead");
+        spdlog::error("Acceptor::handleRead {}", errno);
         // 处理文件描述符大于进程限制的情况
         if (errno == EMFILE)
         {
@@ -51,6 +53,7 @@ void Acceptor::handleRead(){
 }
 
 void Acceptor::listen(){
+    spdlog::debug("Acceptor::listen");
     m_listening = true;
     m_acceptSocket.listen();
     // 开始监听后再注册到poll上

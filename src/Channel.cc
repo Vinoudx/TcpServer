@@ -2,6 +2,8 @@
 
 #include <sys/epoll.h>
 
+#include <spdlog/spdlog.h>
+
 #include "EventLoop.hpp"
 
 const int Channel::KNoneEvent = 0;
@@ -22,14 +24,15 @@ void Channel::tie(const std::shared_ptr<void>& ptr){
 }
 
 void Channel::update(){
-    // m_loop->update(this);
+    m_loop->updateChannel(this);
 }
 
 void Channel::remove(){
-    // m_loop->removeChannel(this);
+    m_loop->removeChannel(this);
 }
 
 void Channel::handleEvent(TimeStamp recvtime){
+    spdlog::debug("Channel::handleEvent");
     std::shared_ptr<void> guard;
     if(m_tied){
         guard = m_tie.lock();
