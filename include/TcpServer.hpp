@@ -70,6 +70,7 @@ private:
     int m_nextFd;
 
     // 保存所有连接，按连接名字哈希
+    // 这个东西是不是只是为了在连接不断开时保持对应connection的生命周期呢？
     ConnectionMap m_map;
 };
 
