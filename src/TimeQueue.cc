@@ -44,6 +44,7 @@ TimerQueue::TimerQueue(EventLoop* loop):
 TimerQueue::~TimerQueue(){
     m_channel->disableAll();
     m_channel->remove();
+    deleteAll();
 }
 
 void TimerQueue::addTask(Functor func, size_t timeoutMS, bool isInterval, int repeatTimes, size_t timeInterval, bool isAsync){
@@ -174,5 +175,21 @@ void TimerQueue::tickWheel(std::array<TimerTask*, 10>& wheel, uint8_t index){
     doAddTasksInLoop();
     for(auto& item: temp){
         addTaskToWheel(item);
+    }
+}
+
+void TimerQueue::deleteAll(){
+    for(int i=0; i<10; i++){
+        deleteInWheel(m_100MsQueue, i);
+        deleteInWheel(m_secondQueue, i);
+    }
+}
+
+void TimerQueue::deleteInWheel(std::array<TimerTask*, 10>& wheel, uint8_t index){
+    TimerTask* currentPtr = wheel[index];
+    while(currentPtr != nullptr){
+        TimerTask* temp = currentPtr;
+        currentPtr = currentPtr->next;
+        delete temp;
     }
 }

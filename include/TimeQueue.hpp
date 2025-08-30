@@ -18,6 +18,7 @@ class EventLoop;
     最短间隔时间 100Ms
     最长间隔时间 10s
     含有100ms和1s两个时间轮
+    不保证时间间隔，只保证执行
 */
 class TimerQueue: public noncopyable{
 
@@ -45,6 +46,8 @@ public:
 
 private:
 
+    void deleteAll();
+    void deleteInWheel(std::array<TimerTask*, 10>& wheel, uint8_t index);
     void tickWheel(std::array<TimerTask*, 10>& wheel, uint8_t index);
     void addTaskToWheel(TimerTask* task);
     void doAddTasksInLoop();

@@ -1,4 +1,5 @@
 build
 lib
-
+./test/client
+./test/server
 
