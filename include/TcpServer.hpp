@@ -13,6 +13,7 @@
 #include "InetAddress.hpp"
 #include "TcpConnection.hpp"
 #include "Callbacks.hpp"
+#include "TimeQueue.hpp"
 
 class EventLoop;
 class EventLoopThreadPool;
@@ -26,7 +27,7 @@ class Buffer;
 class TcpServer: public noncopyable{
 public:
     using ThreadInitCallback = std::function<void(EventLoop*)>;
-
+    using Functor = std::function<void()>;
     enum Option{
         KNOREUSEPORT,
         KREUSEPORT
@@ -43,6 +44,8 @@ public:
     void setConnectionCallback(ConnectionCallback cb){m_connectionCallback = std::move(cb);}
     void setWriteCompleteCallback(WriteCompleteCallback cb){m_writeCallback = std::move(cb);}
     void setMessageCallback(MessageCallback cb){m_messageCallback = std::move(cb);}
+
+    void timer(Functor func, size_t timeoutMS, bool isInterval = false, int repeatTimes = 0, size_t timeInterval = 0, bool isAsync = false);
 
 private:
 
@@ -69,6 +72,7 @@ private:
     std::atomic_int32_t m_started;
     int m_nextFd;
 
+    TimerQueue m_timequeue;
     // 保存所有连接，按连接名字哈希
     // 这个东西是不是只是为了在连接不断开时保持对应connection的生命周期呢？
     ConnectionMap m_map;

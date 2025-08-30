@@ -22,7 +22,8 @@ TcpServer::TcpServer(EventLoop* loop, const InetAddress& listenAddr, const std::
     m_threadPool(std::make_shared<EventLoopThreadPool>(loop, name)),
     m_connectionCallback(defaultConnectionCallback),
     m_messageCallback(defaultMessageCallback),
-    m_nextFd(0){
+    m_nextFd(0),
+    m_timequeue(loop){
 
     m_acceptor->setNewConnectionCallback(std::bind(&TcpServer::newConnection, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -85,3 +86,6 @@ void TcpServer::removeConnectionInLoop(const TcpConnectionPtr& conn){
     ioloop->runInLoop(std::bind(&TcpConnection::connectDestoried, conn));
 }
 
+void TcpServer::timer(Functor func, size_t timeoutMS, bool isInterval, int repeatTimes, size_t timeIntervalMs, bool isAsync){
+    m_timequeue.addTask(func, timeoutMS, isInterval, repeatTimes, timeIntervalMs, isAsync);
+}
